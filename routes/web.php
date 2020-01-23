@@ -18,3 +18,11 @@ Route::get('/', function () {
 Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');
+Route::get('upload', 'FileController@index')->name('upload.home');
+
+Route::post('file/upload', 'FileController@store')->name('file.upload');
+Route::post('upload', 'FileController@upload')->name('upload');
+
+
+Route::get('wipe', 'FileController@wipe')->name('database.wipe');
+Route::get('results', 'GameController@index')->name('results');

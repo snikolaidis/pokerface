@@ -14,7 +14,11 @@
                         </div>
                     @endif
 
-                    You are logged in!
+                    <a class="btn btn-primary" href="{{ route('results') }}">Get results</a>
+                    @if (Auth::user()->user_level == 10)
+                        <a class="btn btn-primary" href="{{ route('upload.home') }}">Upload a file</a>
+                        <a class="btn btn-danger" href="{{ route('database.wipe') }}">Wipe the database</a>
+                    @endif
                 </div>
             </div>
         </div>
