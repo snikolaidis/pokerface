@@ -15,9 +15,9 @@ cp .env.example .env
 - Modify the .env file by adding the database information
 - Run the following commands to prepare the system:
 ```
-php artisan key:generate
 composer install
 npm install
+php artisan key:generate
 ```
 - Run the following commands to prepare the database:
 ```

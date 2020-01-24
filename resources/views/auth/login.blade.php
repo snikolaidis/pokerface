@@ -51,7 +51,7 @@
                             </div>
                         </div>
 
-                        <div class="form-group row mb-0">
+                        <div class="form-group row">
                             <div class="col-md-8 offset-md-4">
                                 <button type="submit" class="btn btn-primary">
                                     {{ __('Login') }}
@@ -64,10 +64,31 @@
                                 @endif
                             </div>
                         </div>
+
+                        <div class="form-group row mb-0 btn-block text-right">
+                            <button class="btn btn-success login_as mr-1 ml-1" data-user="admin@pokerface.com" data-password="password">
+                                Login as admin
+                            </a>
+                            <button class="btn btn-success login_as mr-1 ml-1" data-user="user@pokerface.com" data-password="password">
+                                Login as user
+                            </button>
+                        </div>
                     </form>
                 </div>
             </div>
         </div>
     </div>
 </div>
+@endsection
+
+@section('scripts')
+<script>
+    window.addEventListener('load', function() {
+        $('button.login_as').on('click', function(e) {
+            e.preventDefault();
+            $('#email').val($(this).attr('data-user'));
+            $('#password').val($(this).attr('data-password'));
+        });
+    });
+</script>
 @endsection

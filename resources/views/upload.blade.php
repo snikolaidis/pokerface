@@ -6,28 +6,40 @@
         <div class="col-md-8">
             <div class="card">
                 <div class="card-header">File Upload</div>
+                @if(session()->get('message'))
+                <div class="alert alert-success">
+                    {{ session()->get('message') }}
+                </div>
+                @endif
+
                 <div class="card-body">
-                    <form method="POST" action="{{ route('file.upload') }}" aria-label="{{ __('Upload') }}">
+                    <form id="file" method="POST" class="dropzone" action="{{ route('upload') }}" aria-label="{{ __('Upload') }}" enctype="multipart/form-data">
                         @csrf
-                        <div class="form-group row ">
-                            <label for="title" class="col-sm-4 col-form-label text-md-right">{{ __('File Upload') }}</label>
-                            <div class="col-md-6">
-                            <div id="file" class="dropzone"></div>
-                            </div>    
-                        </div>
-                        <div class="form-group row mb-0">
-                            <div class="col-md-8 offset-md-4">
-                                <button type="submit" class="btn btn-primary">
-                                    {{ __('Upload') }}
-                                </button>
-                            </div>
-                        </div>
                     </form>
                 </div>
             </div>
         </div>
     </div>
 </div>
+<div class="modal fade" id="fileUploadModalCenter" tabindex="-1" role="dialog" aria-labelledby="fileUploadModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLongTitle">File Upload</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 @endsection
 
 @section('scripts')
@@ -35,11 +47,15 @@
     window.addEventListener('load', function() {
         var drop = new Dropzone('#file', {
             createImageThumbnails: false,
-            addRemoveLinks: true,
             url: "{{ route('upload') }}",
             headers: {
                 'X-CSRF-TOKEN': document.head.querySelector('meta[name="csrf-token"]').content
             }
+        });
+        drop.on("complete", function(file) {
+            var data = JSON.parse(file.xhr.response);
+            $('.modal-body').html(data.message)
+            $('#fileUploadModalCenter').modal();
         });
     });
 </script>
