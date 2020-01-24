@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Card;
+use App\Player;
 use App\PokerGame;
 use Illuminate\Http\Request;
 
@@ -11,35 +12,53 @@ class PokerGameController extends Controller
     protected $player_A_cards;
     protected $player_B_cards;
 
-    public function doTheMath(PokerGame $pokerGame) {
+    public function calculateScore(Player $player) {
+        return $this->getScoreForPlayer($player->getCards());
+    }
 
-        // So, in case something goes wrong, we have the default value: draw
-        $pokerGame->winner = 0;
-        $pokerGame->winning_type = 0;
+    public function getTheWinner(Player $player_A, Player $player_B) {
 
-        // And let's group the cards into two arrays
-        $this->player_A_cards = [];
-        $this->player_A_cards[] = new Card($pokerGame->player_a_1);
-        $this->player_A_cards[] = new Card($pokerGame->player_a_2);
-        $this->player_A_cards[] = new Card($pokerGame->player_a_3);
-        $this->player_A_cards[] = new Card($pokerGame->player_a_4);
-        $this->player_A_cards[] = new Card($pokerGame->player_a_5);
+        $score_A = $player_A->getScore();
+        $score_B = $player_B->getScore();
 
-        $this->player_B_cards = [];
-        $this->player_B_cards[] = new Card($pokerGame->player_b_1);
-        $this->player_B_cards[] = new Card($pokerGame->player_b_2);
-        $this->player_B_cards[] = new Card($pokerGame->player_b_3);
-        $this->player_B_cards[] = new Card($pokerGame->player_b_4);
-        $this->player_B_cards[] = new Card($pokerGame->player_b_5);
+        if ($score_A['score'] > $score_B['score']) {
+            $gameResult = [
+                'winner' => 1,
+                'winning_type' => $score_A['type'],
+                'descr' => $score_A['descr'],
+            ];
+        } elseif ($score_A['score'] < $score_B['score']) {
+            $gameResult = [
+                'winner' => 2,
+                'winning_type' => $score_B['type'],
+                'descr' => $score_B['descr'],
+            ];
+        } else {
+            $gameResult = [
+                'winner' => 0,
+                'winning_type' => $score_A['type'],
+                'descr' => $score_A['descr'],
+            ];
 
-        $this->sortTheCards();
+            // For the testing purposes only, we have the case of "one pair" here we have ties. In this case
+            // we need to calculate the higher pair value:
+            if ($score_A['score'] == 200) {
+                $cards_A = $player_A->getCards();
+                $player_A_rank = $cards_A[0]->getRankValue() == $cards_A[1]->getRankValue() ? $cards_A[0]->getRankValue() :
+                                ($cards_A[1]->getRankValue() == $cards_A[2]->getRankValue() ? $cards_A[1]->getRankValue() :
+                                ($cards_A[2]->getRankValue() == $cards_A[3]->getRankValue() ? $cards_A[2]->getRankValue() :
+                                $cards_A[3]->getRankValue()));
+                $cards_B = $player_B->getCards();
+                $player_B_rank = $cards_B[0]->getRankValue() == $cards_B[1]->getRankValue() ? $cards_B[0]->getRankValue() :
+                                ($cards_B[1]->getRankValue() == $cards_B[2]->getRankValue() ? $cards_B[1]->getRankValue() :
+                                ($cards_B[2]->getRankValue() == $cards_B[3]->getRankValue() ? $cards_B[2]->getRankValue() :
+                                $cards_B[3]->getRankValue()));
 
-        // Now it's time to do the analysis for the cards.
-        $score_A = $this->getScoreForPlayer($this->player_A_cards);
-        $score_B = $this->getScoreForPlayer($this->player_B_cards);
+                $gameResult['winner'] = $player_A_rank > $player_B_rank ? 1 : 2;
+            }
+        }
 
-        var_dump($score_A);
-        // var_dump($score_B);
+        return $gameResult;
     }
 
     private function areCardsOfTheSameColor($listOfCards) {
@@ -152,43 +171,34 @@ class PokerGameController extends Controller
         }
     }
 
-    private function sortTheCardsFunc($a,$b) {
-        $rank_a = $a->getRankValue();
-        $rank_b = $b->getRankValue();
+    public function index() {
+        $stats = [
+            "player_A" => [
+                "wins" => \App\PokerGame::where('winner', '=', 1)->get()->count(),
+                "royal_flush" => \App\PokerGame::where('winner', '=', 1)->where('winning_type', '=', 100)->get()->count(),
+                "straight_flush" => \App\PokerGame::where('winner', '=', 1)->where('winning_type', '=', 90)->get()->count(),
+                "four_of_a_kind" => \App\PokerGame::where('winner', '=', 1)->where('winning_type', '=', 80)->get()->count(),
+                "full_house" => \App\PokerGame::where('winner', '=', 1)->where('winning_type', '=', 70)->get()->count(),
+                "flush" => \App\PokerGame::where('winner', '=', 1)->where('winning_type', '=', 60)->get()->count(),
+                "straight" => \App\PokerGame::where('winner', '=', 1)->where('winning_type', '=', 50)->get()->count(),
+                "three_of_a_kind" => \App\PokerGame::where('winner', '=', 1)->where('winning_type', '=', 40)->get()->count(),
+                "two_pair" => \App\PokerGame::where('winner', '=', 1)->where('winning_type', '=', 30)->get()->count(),
+                "one_pair" => \App\PokerGame::where('winner', '=', 1)->where('winning_type', '=', 20)->get()->count(),
+            ],
+            "player_B" => [
+                "wins" => \App\PokerGame::where('winner', '=', 2)->get()->count(),
+                "royal_flush" => \App\PokerGame::where('winner', '=', 2)->where('winning_type', '=', 100)->get()->count(),
+                "straight_flush" => \App\PokerGame::where('winner', '=', 2)->where('winning_type', '=', 90)->get()->count(),
+                "four_of_a_kind" => \App\PokerGame::where('winner', '=', 2)->where('winning_type', '=', 80)->get()->count(),
+                "full_house" => \App\PokerGame::where('winner', '=', 2)->where('winning_type', '=', 70)->get()->count(),
+                "flush" => \App\PokerGame::where('winner', '=', 2)->where('winning_type', '=', 60)->get()->count(),
+                "straight" => \App\PokerGame::where('winner', '=', 2)->where('winning_type', '=', 50)->get()->count(),
+                "three_of_a_kind" => \App\PokerGame::where('winner', '=', 2)->where('winning_type', '=', 40)->get()->count(),
+                "two_pair" => \App\PokerGame::where('winner', '=', 2)->where('winning_type', '=', 30)->get()->count(),
+                "one_pair" => \App\PokerGame::where('winner', '=', 2)->where('winning_type', '=', 20)->get()->count(),
+            ]
+        ];
 
-        if ($rank_a == $rank_b) {
-            return 0;
-        } elseif ($rank_a > $rank_b) {
-            return 1;
-        } else {
-            return -1;
-        }
-    }
- 
-    public function sortTheCards() {
-        
-        // Let's sort player's A cards
-        $array = array();
-        foreach ($this->player_A_cards as $k => $v) {
-            $array[$k] = clone $v;
-        }
-        usort($array, array($this,'sortTheCardsFunc'));
-        
-        $this->player_A_cards = array();
-        foreach ($array as $k => $v) {
-            $this->player_A_cards[$k] = clone $v;
-        }
-
-        // Let's sort player's B cards
-        $array = array();
-        foreach ($this->player_B_cards as $k => $v) {
-            $array[$k] = clone $v;
-        }
-        usort($array, array($this,'sortTheCardsFunc'));
-        
-        $this->player_B_cards = array();
-        foreach ($array as $k => $v) {
-            $this->player_B_cards[$k] = clone $v;
-        }
+        return view('results', ["stats" => $stats]);
     }
 }
