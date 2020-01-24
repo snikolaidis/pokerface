@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Http\Controllers\PokerGameController;
 use Illuminate\Database\Eloquent\Model;
 
 class PokerGame extends Model
@@ -28,15 +29,21 @@ class PokerGame extends Model
         $this->player_b_4 = $arrayOfCards[8];
         $this->player_b_5 = $arrayOfCards[9];
 
+        $this->doTheMath();
+
         // Guess the Winner
         return true;
+    }
+
+    public function doTheMath() {
+        $pokerGameContoller = new PokerGameController();
+        $pokerGameContoller->doTheMath($this);
     }
 }
 
 
 /* Tinker Test
-$game = new \App\PokerGame();
-$game->addListOfCards("8C TS KC 9H 4S 7D 2S 5D 3S AC");
+$game = new \App\PokerGame(); $game->addListOfCards("8C TS KC 9H 4S 7D 2S 5D 3S AC");
 $game->save();
 $game->player_a_1 = "8C";
 */
