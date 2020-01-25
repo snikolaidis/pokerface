@@ -9,6 +9,9 @@ class PokerGame extends Model
 {
     /**
      * The basic function which gets a list of 10 cards and prepares all the data.
+     * 
+     * The stored data can be groupped in two groups: Each card separately and the calculated summaries.
+     * 
      * @param mixed $listOfCards 
      * @return void 
      */
@@ -35,6 +38,13 @@ class PokerGame extends Model
         $this->calculateTheWinner($player_A, $player_B);
     }
 
+    /**
+     * This function was separated from the main addListOfCards() function so to better test the application.
+     * 
+     * @param Player $player_A 
+     * @param Player $player_B 
+     * @return void 
+     */
     public function calculateTheWinner(Player $player_A, Player $player_B) {
         $pokerGameContoller = new PokerGameController();
         $gameResult = $pokerGameContoller->getTheWinner($player_A, $player_B);
@@ -44,10 +54,3 @@ class PokerGame extends Model
         $this->winning_descr = $gameResult['descr'];
     }
 }
-
-
-/* Tinker Test
-$game = new \App\PokerGame(); $game->addListOfCards("8C TS KC 9H 4S 7D 2S 5D 3S AC");
-$game->save();
-$game->player_a_1 = "8C";
-*/

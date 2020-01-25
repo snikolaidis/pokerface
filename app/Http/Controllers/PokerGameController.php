@@ -12,8 +12,17 @@ class PokerGameController extends Controller
     protected $player_A_cards;
     protected $player_B_cards;
 
+    /**
+     * Implementing basic auth access.
+     */
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
+
     public function calculateScore(Player $player) {
-        return $this->getScoreForPlayer($player->getCards());
+        // return $this->getScoreForPlayer_v1($player->getCards());
+        return $this->getScoreForPlayer_v2($player->getArrayOfCards());
     }
 
     public function getTheWinner(Player $player_A, Player $player_B) {
@@ -76,7 +85,14 @@ class PokerGameController extends Controller
             $listOfCards[3]->getRankValue() == ($listOfCards[4]->getRankValue() - 1);
     }
 
-    private function getScoreForPlayer($listOfCards) {
+    /**
+     * This is the 1st version of calculating the scores. It was a very primitive first approach.
+     * Quite hard to read and follow.
+     * 
+     * @param mixed $listOfCards 
+     * @return array 
+     */
+    private function getScoreForPlayer_v1($listOfCards) {
 
         if ($this->areCardsOfTheSameColor($listOfCards) && $listOfCards[0]->getRankValue() == 9) {
             return [
@@ -171,6 +187,109 @@ class PokerGameController extends Controller
         }
     }
 
+    /**
+     * The 2nd version of the score caclulation. Better use of arrays and easier to follow. Much more elegant.
+     * 
+     * @param mixed $listOfCards 
+     * @return (int|string)[] 
+     */
+    private function getScoreForPlayer_v2($listOfCards) {
+
+        if (
+            sizeof($listOfCards["colors"]) == 1 &&
+            array_key_last($listOfCards["ranks"]) == "T"
+        ) {
+            return [
+                "score" => 1000,
+                "type" => 100,
+                "descr" => "Royal Flush",
+            ];
+        } elseif (
+            sizeof($listOfCards["colors"]) == 1 &&
+            Card::getTheRankOf(array_keys($listOfCards["ranks"])[0]) - Card::getTheRankOf(array_keys($listOfCards["ranks"])[4]) == 4
+        ) {
+            return [
+                "score" => 900,
+                "type" => 90,
+                "descr" => "Straight Flush",
+            ];
+        } elseif (
+            sizeof($listOfCards["colors"]) == 4 &&
+            $listOfCards["ranks"][array_keys($listOfCards["ranks"])[0]] == 4
+        ) {
+            return [
+                "score" => 800,
+                "type" => 80,
+                "descr" => "Four of a kind",
+            ];
+        } elseif (
+            sizeof($listOfCards["colors"]) > 2 &&
+            $listOfCards["ranks"][array_keys($listOfCards["ranks"])[0]] == 3 &&
+            $listOfCards["ranks"][array_keys($listOfCards["ranks"])[1]] == 2
+        ) {
+            return [
+                "score" => 700,
+                "type" => 70,
+                "descr" => "Full House",
+            ];
+        } elseif (
+            sizeof($listOfCards["colors"]) == 1
+        ) {
+            return [
+                "score" => 600,
+                "type" => 60,
+                "descr" => "Flush",
+            ];
+        } elseif (
+            sizeof($listOfCards["ranks"]) == 5 &&
+            Card::getTheRankOf(array_keys($listOfCards["ranks"])[0]) - Card::getTheRankOf(array_keys($listOfCards["ranks"])[4]) == 4
+        ) {
+            return [
+                "score" => 500,
+                "type" => 50,
+                "descr" => "Straight",
+            ];
+        } elseif (
+            $listOfCards["ranks"][array_keys($listOfCards["ranks"])[0]] == 3 &&
+            $listOfCards["ranks"][array_keys($listOfCards["ranks"])[1]] == 1
+        ) {
+            return [
+                "score" => 400,
+                "type" => 40,
+                "descr" => "Three of a Kind",
+            ];
+        } elseif (
+            $listOfCards["ranks"][array_keys($listOfCards["ranks"])[0]] == 2 &&
+            $listOfCards["ranks"][array_keys($listOfCards["ranks"])[1]] == 2
+        ) {
+            return [
+                "score" => 300,
+                "type" => 30,
+                "descr" => "Two pair",
+            ];
+        } elseif (
+            $listOfCards["ranks"][array_keys($listOfCards["ranks"])[0]] == 2 &&
+            $listOfCards["ranks"][array_keys($listOfCards["ranks"])[1]] == 1
+        ) {
+            return [
+                "score" => 200,
+                "type" => 20,
+                "descr" => "One pair",
+            ];
+        } else {
+            return [
+                "score" => Card::getTheRankOf(array_keys($listOfCards["ranks"])[0]),
+                "type" => 10,
+                "descr" => "High Card",
+            ];
+        }
+    }
+
+    /**
+     * Final results. We're running some summary queries to populate the final view.
+     * 
+     * @return Illuminate\View\View|Illuminate\Contracts\View\Factory 
+     */
     public function index() {
         $stats = [
             "player_A" => [
@@ -184,6 +303,7 @@ class PokerGameController extends Controller
                 "three_of_a_kind" => \App\PokerGame::where('winner', '=', 1)->where('winning_type', '=', 40)->get()->count(),
                 "two_pair" => \App\PokerGame::where('winner', '=', 1)->where('winning_type', '=', 30)->get()->count(),
                 "one_pair" => \App\PokerGame::where('winner', '=', 1)->where('winning_type', '=', 20)->get()->count(),
+                "high_card" => \App\PokerGame::where('winner', '=', 1)->where('winning_type', '<', 20)->get()->count(),
             ],
             "player_B" => [
                 "wins" => \App\PokerGame::where('winner', '=', 2)->get()->count(),
@@ -196,6 +316,7 @@ class PokerGameController extends Controller
                 "three_of_a_kind" => \App\PokerGame::where('winner', '=', 2)->where('winning_type', '=', 40)->get()->count(),
                 "two_pair" => \App\PokerGame::where('winner', '=', 2)->where('winning_type', '=', 30)->get()->count(),
                 "one_pair" => \App\PokerGame::where('winner', '=', 2)->where('winning_type', '=', 20)->get()->count(),
+                "high_card" => \App\PokerGame::where('winner', '=', 2)->where('winning_type', '<', 20)->get()->count(),
             ]
         ];
 

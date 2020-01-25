@@ -16,7 +16,7 @@
         </testsuite>
 
         <testsuite name="Feature">
-            <directory suffix="Test.php">./tests/Feature</directory>
+            <directory suffix=".php">./tests/Feature</directory>
         </testsuite>
     </testsuites>
     <filter>

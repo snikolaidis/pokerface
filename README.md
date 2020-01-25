@@ -33,3 +33,10 @@ npm run dev
 php artisan serve
 ```
 - Enjoy the application [here](http://127.0.0.1:8000)!
+
+## Testing
+
+From the command line, run the following:
+```
+./vendor/bin/phpunit --testsuite Feature
+```

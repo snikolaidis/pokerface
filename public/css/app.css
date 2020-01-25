@@ -11362,3 +11362,27 @@ a.text-dark:focus {
   min-height: auto;
 }
 
+html,
+body {
+  background: url(/images/background.jpg) center center no-repeat;
+  background-size: cover;
+  min-height: 100vh;
+  background-attachment: fixed;
+}
+
+.card-body.results .col.score {
+  font-size: 42px;
+  text-align: center;
+  margin-top: 68px;
+}
+
+.card-body.results .col.score.winner {
+  font-weight: bold;
+  color: blue;
+}
+
+.card-body.results .row.title > div {
+  font-size: 42px;
+  font-weight: bold;
+}
+

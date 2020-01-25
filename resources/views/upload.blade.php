@@ -16,6 +16,10 @@
                     <form id="file" method="POST" class="dropzone" action="{{ route('upload') }}" aria-label="{{ __('Upload') }}" enctype="multipart/form-data">
                         @csrf
                     </form>
+                    <div class="row btn-block text-right">
+                        <a class="btn btn-primary" href="{{ route('home') }}">Back to home</a>
+                        <a id="get-results" class="btn btn-primary d-none" href="{{ route('results') }}">Get results</a>
+                    </div>
                 </div>
             </div>
         </div>
@@ -55,6 +59,9 @@
         drop.on("complete", function(file) {
             var data = JSON.parse(file.xhr.response);
             $('.modal-body').html(data.message)
+            if (data.result) {
+                $('#get-results').removeClass('d-none');
+            }
             $('#fileUploadModalCenter').modal();
         });
     });

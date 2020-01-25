@@ -8,26 +8,24 @@ class Card extends Model
 {
     protected $rank;
     protected $color;
-    protected $rankValues;
+    public static $rankValues = [
+        "2" => 1,
+        "3" => 2,
+        "4" => 3,
+        "5" => 4,
+        "6" => 5,
+        "7" => 6,
+        "8" => 7,
+        "9" => 8,
+        "T" => 9,
+        "J" => 10,
+        "Q" => 11,
+        "K" => 12,
+        "A" => 13,
+    ];
 
     public function __construct($card)
     {
-        $this->rankValues = [
-            "2" => 1,
-            "3" => 2,
-            "4" => 3,
-            "5" => 4,
-            "6" => 5,
-            "7" => 6,
-            "8" => 7,
-            "9" => 8,
-            "T" => 9,
-            "J" => 10,
-            "Q" => 11,
-            "K" => 12,
-            "A" => 13,
-        ];
-
         $this->rank = substr($card, 0, 1);
         $this->color = substr($card, 1, 1);
     }
@@ -37,12 +35,16 @@ class Card extends Model
     }
 
     public function getRank() {
-        return $this->rank;
+        return $this->rank . '';
     }
 
     public function getRankValue() {
-        if (isset($this->rankValues[$this->rank])) {
-            return $this->rankValues[$this->rank];
+        return $this->getTheRankOf($this->rank);
+    }
+
+    public static function getTheRankOf($rank) {
+        if (isset(Card::$rankValues[$rank])) {
+            return Card::$rankValues[$rank];
         } else {
             return 0;
         }
