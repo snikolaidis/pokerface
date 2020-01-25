@@ -11386,3 +11386,57 @@ body {
   font-weight: bold;
 }
 
+.card-body.results a img {
+  -webkit-transition: all 0.15s ease-in-out;
+  transition: all 0.15s ease-in-out;
+}
+
+.card-body.results a:hover img {
+  -webkit-transform: scale(1.1);
+          transform: scale(1.1);
+}
+
+.card-body.games .winner-1 {
+  background: antiquewhite;
+}
+
+.card-body.games .winner-2 {
+  background: aqua;
+}
+
+.card-body.games .row.title div {
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.card-body.games .row.with-cards {
+  border: 1px solid #d8d8d8;
+  border-bottom: none;
+}
+
+.card-body.games .row.with-cards:last-child {
+  border: 1px solid #d8d8d8;
+}
+
+.card-body.games .row.with-cards .col {
+  padding: 8px 0;
+  text-align: center;
+  position: relative;
+}
+
+.card-body.games .row.with-cards .col img {
+  width: 90%;
+  -webkit-transition: all 0.15s ease-in-out;
+  transition: all 0.15s ease-in-out;
+}
+
+.card-body.games .row.with-cards .col-2 {
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.card-body.games .row.with-cards:hover .col img {
+  -webkit-transform: scale(1.35);
+          transform: scale(1.35);
+}
+

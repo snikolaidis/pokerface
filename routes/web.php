@@ -26,3 +26,6 @@ Route::post('upload', 'DatabaseController@upload')->name('upload');
 
 Route::get('wipe', 'DatabaseController@wipe')->name('database.wipe');
 Route::get('results', 'PokerGameController@index')->name('results');
+
+Route::get('games', 'PokerGameController@showAllGames');
+Route::get('games/{winning_type}', 'PokerGameController@showGames');

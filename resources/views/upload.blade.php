@@ -16,6 +16,8 @@
                     <form id="file" method="POST" class="dropzone" action="{{ route('upload') }}" aria-label="{{ __('Upload') }}" enctype="multipart/form-data">
                         @csrf
                     </form>
+                </div>
+                <div class="card-footer">
                     <div class="row btn-block text-right">
                         <a class="btn btn-primary" href="{{ route('home') }}">Back to home</a>
                         <a id="get-results" class="btn btn-primary d-none" href="{{ route('results') }}">Get results</a>

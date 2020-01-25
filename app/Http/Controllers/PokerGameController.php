@@ -322,4 +322,14 @@ class PokerGameController extends Controller
 
         return view('results', ["stats" => $stats]);
     }
+
+    public function showAllGames(Request $request) {
+        $games = \App\PokerGame::paginate(20);
+        return view('games', ["games" => $games]);
+    }
+
+    public function showGames(Request $request, $winning_type) {
+        $games = \App\PokerGame::where('winning_type', '=', $winning_type)->paginate(20);
+        return view('games', ["games" => $games]);
+    }
 }

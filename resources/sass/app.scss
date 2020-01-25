@@ -22,19 +22,77 @@ html, body {
   background-attachment: fixed;
 }
 
-.card-body.results {
-  .col.score {
-      font-size: 42px;
-      text-align: center;
-      margin-top: 68px;
+.card-body {
+  &.results {
+    .col.score {
+        font-size: 42px;
+        text-align: center;
+        margin-top: 68px;
 
-      &.winner {
-          font-weight: bold;
-          color: blue;
+        &.winner {
+            font-weight: bold;
+            color: blue;
+        }
+    }
+    .row.title > div {
+      font-size: 42px;
+      font-weight: bold;
+    }
+
+    a {
+      img {
+        transition: all .15s ease-in-out;
       }
+      &:hover img {
+        transform: scale(1.1);
+      }
+    }
   }
-  .row.title > div {
-    font-size: 42px;
-    font-weight: bold;
+
+  &.games {
+
+      .winner-1 {
+        background: antiquewhite;
+      }
+      .winner-2 {
+        background: aqua;
+      }
+
+    .row.title {
+      div {
+        font-size: 24px;
+        font-weight: bold;
+      }
+    }
+    .row.with-cards {
+      border: 1px solid #d8d8d8;
+      border-bottom: none;
+
+      &:last-child {
+        border: 1px solid #d8d8d8;
+      }
+
+      .col {
+        padding: 8px 0;
+        text-align: center;
+        position: relative;
+
+        img {
+          width: 90%;
+          transition: all .15s ease-in-out;
+        }
+      }
+      .col-2 {
+        font-size: 18px;
+        font-weight: bold;
+      }
+      &:hover {
+        .col {
+          img {
+            transform: scale(1.35);
+          }
+        }
+      }
+    }
   }
 }
